@@ -4,15 +4,11 @@
   --global-grey-color: #e0e0e0;
   --global-light-grey-color: #f1f3f4;
   --global-white-color: #fff;
-  --global-sub-color: #fbbc04;
-  --global-active-color: #feefc3;
+  --global-sub-color: #eba937;
+  --global-active-color: #eba937;
 }
 
 /*======== GLOBAL =========*/
-* {
-  font-family: "Roboto";
-}
-
 a {
   text-decoration: none;
 }
@@ -66,6 +62,11 @@ ul {
 
 .mdl-layout__header {
   background-color: var(--global-white-color);
+}
+
+.mdl-layout-title {
+  font-family: "Dancing Script", cursive;
+  font-size: 30px;
 }
 
 .material-icons,
@@ -464,4 +465,5 @@ ul {
   width: 100%;
   padding: 18px;
   resize: none;
+  font-family: "Roboto";
 }

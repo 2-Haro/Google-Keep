@@ -33,7 +33,7 @@ def login():
         flash("Password is not valid.")
       else:
         session['user_id'] = user.user_id
-        return redirect(url_for('base.index'))
+        return redirect(url_for('base.my_page', user_id=user.user_id))
     else:
       flash("User ID does not exist.")
   else:

@@ -113,7 +113,7 @@ const MEMO = (function () {
       el.id +
       ')">';
     labelHtml += '<span class="sidemenu-icon material-icons-outlined">';
-    labelHtml += "label";
+    labelHtml += "hive";
     labelHtml += "</span>";
     labelHtml += '<span class="sidemenu-title">';
     labelHtml += el.content;
@@ -188,6 +188,11 @@ const MEMO = (function () {
       ');">';
     itemHtml += '<i class="material-icons-outlined">layers_clear</i>';
     itemHtml += "</button>";
+    itemHtml += `<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="MEMO.likes(${el.id});">`;
+    itemHtml += `<i class="material-icons">mood</i>`;
+    itemHtml += "</button>";
+    console.log(el.likes.length);
+    itemHtml += `<span class="likes">${el.likes.length}</span>`;
     itemHtml += "</div>";
     itemHtml += '<div class="mdl-card__menu">';
     if (IS_DELETED) {
@@ -216,7 +221,7 @@ const MEMO = (function () {
     html += '<div class="item item-full">';
     html += '<span class="sidemenu-icon material-icons-outlined">';
     html += "info";
-    html += "<span> 추가 로드할 데이터 없음</span>";
+    html += "<span> 꿀이 부족합니다..</span>";
     html += "</span>";
     html += "</div>";
     return html;
@@ -228,7 +233,7 @@ const MEMO = (function () {
     html += '<div class="item item-full" onclick="MEMO.getMemos(this);">';
     html += '<span class="sidemenu-icon material-icons-outlined">';
     html += "hourglass_top";
-    html += "<span> 추가 로드하기</span>";
+    html += "<span> 꿀팁 더보기</span>";
     html += "</span>";
     html += "</div>";
     return html;
@@ -581,6 +586,24 @@ const MEMO = (function () {
     });
   };
 
+  const likes = (id) => {
+    const $item = $("#item" + id);
+
+    $.ajax({
+      url: "/api/memos/" + id + "/likes",
+      type: "post",
+      success: (r) => {
+        $item.find(".likes").html(r);
+      },
+      error: (e) => {
+        alert(e.responseText);
+      },
+      complete: () => {
+        _resetGridLayout;
+      },
+    });
+  };
+
   /* 메모 검색 조회 */
   const getMemosByNeedle = function (needle) {
     STATUS = true;
@@ -657,5 +680,6 @@ const MEMO = (function () {
     deleteLabel: deleteLabel,
     addLabel: addLabel,
     init: init,
+    likes: likes,
   };
 })();

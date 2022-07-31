@@ -10,10 +10,10 @@
         {{ form.csrf_token }}
         <div class="mdl-card__title">
           <div id="logo">
-            <span class="material-icons"> article </span>
+            <span class="material-icons"> hive </span>
           </div>
           <span id="logoTitle" class="mdl-card__title-text">
-            <a href="/">keep</a>: Login
+            <a href="/">Honey Tips</a>: Login
           </span>
         </div>
         <div class="mdl-card__supporting-text">
@@ -34,8 +34,10 @@
 
           <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
-              <a href="{{ url_for('auth.register') }}">회원가입</a>
-              <a href="{{ url_for('base.index') }}" style="float: right">홈</a>
+              <a href="{{ url_for('auth.register') }}">Sign In</a>
+              <a href="{{ url_for('base.index') }}" style="float: right"
+                >Home</a
+              >
             </div>
           </div>
         </div>

@@ -27,9 +27,9 @@ class LabelList(Resource):
     '''라벨 복수 조회'''
     query = LabelModel.query.join(
       UserModel,
-      UserModel.id == LabelModel.user_id
+      # UserModel.id == LabelModel.user_id
     ).filter(
-      UserModel.id == g.user.id
+      # UserModel.id == g.user.id
     )
     return query.all()
   
@@ -39,20 +39,20 @@ class LabelList(Resource):
     '''라벨 생성'''
     args = parser.parse_args()
     content = args['content']
-    label = LabelModel.query.join(
-      UserModel,
-      UserModel.id == LabelModel.user_id
-    ).filter(
-      UserModel.id == g.user.id,
-      LabelModel.content == content # 중복되는 데이터 체크
-    ).first()
+    # label = LabelModel.query.join(
+    #   UserModel,
+    #   UserModel.id == LabelModel.user_id
+    # ).filter(
+    #   UserModel.id == g.user.id,
+    #   LabelModel.content == content # 중복되는 데이터 체크
+    # ).first()
 
-    if label: # 중복되는 데이터가 존재하면 오류 발생
-      ns.abort(409)
+    # if label: # 중복되는 데이터가 존재하면 오류 발생
+    #   ns.abort(409)
 
     label = LabelModel(
       content=content,
-      user_id=g.user.id
+      user_id=1
     )
 
     g.db.add(label)

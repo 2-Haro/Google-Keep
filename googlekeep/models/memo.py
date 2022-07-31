@@ -7,6 +7,12 @@ memos_labels = db.Table(
   db.Column('label_id', db.Integer, db.ForeignKey('label.id'), primary_key=True)
 )
 
+likes = db.Table(
+  'likes',
+  db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+  db.Column('memo_id', db.Integer, db.ForeignKey('memo.id'), primary_key=True)
+)
+
 class Memo(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String(100), nullable=False)
@@ -28,3 +34,7 @@ class Memo(db.Model):
     secondary=memos_labels,
     backref=db.backref('memos')
     )
+  likes = db.relationship(
+    'User',
+    secondary=likes,
+    backref=db.backref('users'))

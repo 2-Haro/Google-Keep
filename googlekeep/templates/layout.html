@@ -19,7 +19,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
     <!-------------------------------BLOCK TITLE----------------------------------->
-    <title>{% block title %}{% endblock %} | Keep</title>
+    <title>{% block title %}{% endblock %} Honey Tips </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-------------------------------//BLOCK TITLE----------------------------------->
     <!-------------------------------BLOCK HEAD----------------------------------->
     {% block head %}
@@ -68,13 +72,13 @@
             <!-------------------------------로고----------------------------------->
             <div id="logo">
               <span class="material-icons">
-                article
+                hive
               </span>
             </div>
             <!-------------------------------//로고----------------------------------->
             <!-------------------------------로고 타이틀----------------------------------->
             <span id="logoTitle" class="mdl-layout-title">
-              <a href="{{ url_for('base.index') }}">Keep</a>
+              <a href="{{ url_for('base.index') }}" fonts="">Honey Tips</a>
             </span>
             <!-------------------------------//로고 타이틀----------------------------------->
             <!-------------------------------네비게이션 인데, 서치박스로 사용----------------------------------->
@@ -115,7 +119,7 @@
               {% if g.user -%}
                 <!--logined-->
                 <span class="mdl-chip mdl-chip--contact">
-                  <span class="mdl-chip__contact mdl-color--teal mdl-color-text--white">{{ g.user.user_name[0] | upper }}</span>
+                  <span class="mdl-chip__contact mdl-color--orange mdl-color-text--white">{{ g.user.user_name[0] | upper }}</span>
                   <span class="mdl-chip__text">{{g.user.user_name}}</span>
                   <a href="{{ url_for('auth.logout') }}" class="mdl-chip__action "><i class="material-icons">cancel</i></a>
                 </span>
@@ -140,36 +144,28 @@
               <!-------------------------------메모 버튼----------------------------------->
               <button class="active sidemenu-btn-memo sidemenu-btn mdl-button mdl-js-button" onclick="MEMO.refreshMemos();">
                 <span class="sidemenu-icon material-icons-outlined">
-                  lightbulb
+                  water_drop
                 </span>
-                <span class="sidemenu-title">메모</span>
+                <span class="sidemenu-title">꿀팁들</span>
               </button>
               <!-------------------------------//메모 버튼----------------------------------->
-              <!-------------------------------라벨 버튼----------------------------------->
-              <!--button class="sidemenu-btn mdl-button mdl-js-button" onclick="MEMO.getMemosByLabel(1)">
-                <span class="sidemenu-icon material-icons-outlined">
-                label
-                </span>
-                <span class="sidemenu-title">Label1</span>
-              </!--button-->
-              <!-------------------------------//라벨 버튼----------------------------------->
               <!-------------------------------라벨 생성 버튼----------------------------------->
               <button class="sidemenu-label-add-btn sidemenu-btn mdl-button mdl-js-button" onclick="event.stopPropagation();">
                 <!--label add icon-->
                 <span class="sidemenu-icon material-icons-outlined">
-                  new_label
+                  hive
                 </span>
                 <!--label title-->
                 <span class="sidemenu-title">
                   <!--label input-->
-                  <input class="create" type="text" value="" placeholder="+  신규생성" maxlength=10 onchange="MEMO.addLabel(event);" autocomplete="off">
+                  <input class="create" type="text" value="" placeholder="+  벌집 추가하기" maxlength=10 onchange="MEMO.addLabel(event);" autocomplete="off">
                 </span>
               </button>
               <!-------------------------------//라벨 생성 버튼----------------------------------->
               <!-------------------------------삭제된 메모 보기 버튼----------------------------------->
               <button class="sidemenu-btn mdl-button mdl-js-button" onclick="MEMO.getDeletedMemos();">
                 <span class="sidemenu-icon material-icons-outlined">
-                  delete
+                  fireplace
                 </span>
                 <span class="sidemenu-title">휴지통</span>
               </button>
@@ -181,7 +177,7 @@
             <div id="content">
               <!-------------------------------컨트롤러----------------------------------->
               <div id="controller" class="mdl-shadow--2dp">
-                <span>메모 작성 ...</span>
+                <span>꿀팁 적기</span>
               </div>
               <!-------------------------------//컨트롤러----------------------------------->
               {% block content -%}

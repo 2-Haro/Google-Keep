@@ -19,11 +19,14 @@ label = ns.model('Label', {
   'content': fields.String(required=True, description='라벨 내용')
 })
 
+likes = ns.model("Likes",{})
+
 memo = ns.model('Memo', {
   'id': fields.Integer(required=True, description='메모 고유 ID'),
   'user_id': fields.Integer(required=True, description='유저 고유 ID'),
   'title': fields.String(required=True, description='메모 제목'),
   'content': fields.String(required=True, description='메모 내용'),
+  'likes': fields.List(fields.Nested(likes), description='좋아요 수'),
   'linked_image': fields.String(required=False, description='메모 이미지 경로'),
   'is_deleted': fields.Boolean(description='메모 삭제 상태'),
   'labels': fields.List(fields.Nested(label), description='연결된 라벨'),
@@ -102,9 +105,9 @@ class MemoList(Resource):
 
     base_query = MemoModel.query.join(
       UserModel,
-      UserModel.id == MemoModel.user_id
+      # UserModel.id == MemoModel.user_id
     ).filter(
-      UserModel.id == g.user.id,
+      # UserModel.id == g.user.id,
       MemoModel.is_deleted == is_deleted
     ).order_by(
       MemoModel.created_at.desc()
@@ -171,8 +174,8 @@ class Memo(Resource):
   def get(self, id):
     '''메모 단수 조회'''
     memo = MemoModel.query.get_or_404(id)
-    if g.user.id != memo.user_id:
-      ns.abort(403)
+    # if g.user.id != memo.user_id:
+    #   ns.abort(403)
     return memo
 
   @ns.marshal_list_with(memo, skip_none=True)
@@ -181,13 +184,13 @@ class Memo(Resource):
     '''메모 업데이트'''
     args = put_parser.parse_args()
     memo = MemoModel.query.get_or_404(id)
-    if g.user.id != memo.user_id:
-      ns.abort(403)
     if args['title'] is not None:
       memo.title = args['title']
     if args['content'] is not None:
       memo.content = args['content']
     if args['is_deleted'] is not None:
+      if g.user.id != memo.user_id:
+        ns.abort(403)
       memo.is_deleted = args['is_deleted']
     file = args['linked_image']
     if file:
@@ -208,12 +211,12 @@ class Memo(Resource):
         if cnt:
           label = LabelModel.query.filter(
             LabelModel.content == cnt,
-            LabelModel.user_id == g.user.id
+            LabelModel.user_id == 1
           ).first()
           if not label:
             label = LabelModel(
               content = cnt,
-              user_id = g.user.id
+              user_id = 1
             )
           memo.labels.append(label)
     g.db.commit()
@@ -227,6 +230,17 @@ class Memo(Resource):
     g.db.delete(memo)
     g.db.commit()
     return '', 204
+  
+# /api/memos/id/like
+@ns.param('id', '메모 좋아요')
+@ns.route('/<int:id>/likes')
+class MemoLike(Resource):
+  def post(self, id):
+    '''메모 좋아요'''
+    memo = MemoModel.query.get(id)
+    memo.likes.append(g.user)
+    g.db.commit()
+    return len(memo.likes)
 
 @ns.param('id', '메모 고유 아이디')
 @ns.route('/<int:id>/image')
