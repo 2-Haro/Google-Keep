@@ -1,10 +1,14 @@
-{% extends "/layout.html" %} {% block title -%} {%- endblock %} {% block head
--%} {{ super() }}
+{% extends "/layout.html" %}
+<!-------------------------------BLOCK TITLE----------------------------------->
+{% block title -%} Index {%- endblock %}
+<!-------------------------------//BLOCK TITLE----------------------------------->
+<!-------------------------------BLOCK HEAD----------------------------------->
+{% block head -%} {{ super() }}
 <!--Masonry JS-->
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-<!--Masonry Image Loaded JS-->
+<!--Masonry Image Loaded JS: 추가적으로 메모가 생성이 될 때 이미지들이 로드되기 전에 masonry가 작동되서 높이 값을 잡지 못하는 버그 해결-->
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<!--Ajax 호출(통신) 시 CSRF Token(Flask-WTF)을 헤더에 포함해서 호출-->
+<!--14. ajax CSRF 처리: Ajax 호출(통신) 시 CSRF Token(Flask-WTF)을 헤더에 포험해서 호출 -> production 환경에서 정상 동작(api docs는 개발 환경에서만 사용)-->
 <script type="text/javascript">
   var csrf_token = "{{ csrf_token() }}";
 
@@ -19,14 +23,22 @@
     },
   });
 </script>
-{%- endblock %} {% block content %} {{ super() }}
+{%- endblock %}
+<!-------------------------------//BLOCK HEAD----------------------------------->
+<!-------------------------------BLOCK CONTENT----------------------------------->
+{% block content %} {{ super() }}
 <!--팝업 모달 : dialog-->
-{% include "_modal_edit.html" %} {% endblock %} {% block container %}
-<!-- Masonry 가 width값을 잡기 위한 sizer -->
+{% include "_modal_edit.html" %} {% endblock %}
+<!-------------------------------//BLOCK CONTENT----------------------------------->
+<!-------------------------------BLOCK CONTAINER----------------------------------->
+{% block container %}
+<!--Masonry 가 width값을 잡기 위한 sizer-->
 <div class="sizer"></div>
-<!-- //Masonry 가 width값을 잡기 위한 sizer -->
-
-{% endblock %} {% block tail %}
+<!--//Masonry 가 width값을 잡기 위한 sizer-->
+{% endblock %}
+<!-------------------------------//BLOCK CONTAINER----------------------------------->
+<!-------------------------------BLOCK TAIL----------------------------------->
+{% block tail %}
 <!--UI 관련 style JS-->
 <script
   src="{{ url_for('static', filename='js/style.js') }}"
@@ -43,3 +55,4 @@
   charset="utf-8"
 ></script>
 {% endblock %}
+<!-------------------------------//BLOCK TAIL----------------------------------->

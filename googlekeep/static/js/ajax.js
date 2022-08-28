@@ -59,7 +59,7 @@ const MEMO = (function () {
     $GRID.masonry("remove", elems);
   };
 
-  /*그리드 다시 재적용*/
+  /* 그리드 다시 재적용 */
   const _resetGridLayout = function () {
     const imageLength = $CONTAINER.find("img").length;
     if (imageLength >= 1) {
@@ -113,7 +113,7 @@ const MEMO = (function () {
       el.id +
       ')">';
     labelHtml += '<span class="sidemenu-icon material-icons-outlined">';
-    labelHtml += "hive";
+    labelHtml += "label";
     labelHtml += "</span>";
     labelHtml += '<span class="sidemenu-title">';
     labelHtml += el.content;
@@ -188,11 +188,6 @@ const MEMO = (function () {
       ');">';
     itemHtml += '<i class="material-icons-outlined">layers_clear</i>';
     itemHtml += "</button>";
-    itemHtml += `<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="MEMO.likes(${el.id});">`;
-    itemHtml += `<i class="material-icons">mood</i>`;
-    itemHtml += "</button>";
-    console.log(el.likes.length);
-    itemHtml += `<span class="likes">${el.likes.length}</span>`;
     itemHtml += "</div>";
     itemHtml += '<div class="mdl-card__menu">';
     if (IS_DELETED) {
@@ -215,25 +210,25 @@ const MEMO = (function () {
     return itemHtml;
   };
 
-  /*추가 데이터 없음 아이템 태그*/
+  /* 추가 데이터 없음 아이템 태그 */
   const _makeNoMoreItemHtml = function () {
     let html = "";
     html += '<div class="item item-full">';
     html += '<span class="sidemenu-icon material-icons-outlined">';
     html += "info";
-    html += "<span> 꿀이 부족합니다..</span>";
+    html += "<span> 추가 로드할 데이터 없음</span>";
     html += "</span>";
     html += "</div>";
     return html;
   };
 
-  /*추가 데이터 로드 아이템 태그*/
+  /* 추가 데이터 로드 아이템 태그 */
   const _makeMoreItemHtml = function () {
     let html = "";
     html += '<div class="item item-full" onclick="MEMO.getMemos(this);">';
     html += '<span class="sidemenu-icon material-icons-outlined">';
     html += "hourglass_top";
-    html += "<span> 꿀팁 더보기</span>";
+    html += "<span> 추가 로드하기</span>";
     html += "</span>";
     html += "</div>";
     return html;
@@ -248,31 +243,32 @@ const MEMO = (function () {
     let submitFlag = false;
     for (var [key, value] of data.entries()) {
       if (key == "title" || key == "content") {
-        if (value) submitFlag = true;
+        // 13. 메모 기본 기능 구현: key가 title이거나 content이고,
+        if (value) submitFlag = true; // 13. 메모 기본 기능 구현: value가 존재한다면 submitFlag를 True로 설정
       }
     }
     if (submitFlag) {
       $.ajax({
-        url: "/api/memos", // 엔드포인트
-        type: "post", // METHOD
-        data: data, // 자동으로 FormData에 담긴다
+        url: "/api/memos", // 13. 메모 기본 기능 구현: 엔드포인트: /api/memos
+        type: "post", // 13. 메모 기본 기능 구현: POST Method
+        data: data, // 13. 메모 기본 기능 구현: data가 자동으로 data(FormData)에 담긴다
         enctype: "multipart/form-data",
-        processData: false, // The automatic conversion of data to strings is prevented
-        contentType: false, // default 값으로 사용하지 않고, multipart/form-data (enctype) 처리 위해서 false 처리
-        // 모든 문자를 인코딩하지 않음을 명시 -> <form> 요소가 파일이나 이미지를 서버로 전송할 떄 주로 사용
+        processData: false, // 13. 메모 기본 기능 구현: The automatic conversion of data to strings is prevented -> data 파라미터로 전달된 데이터를 jQuery 내부적으로 query string 처리 X(파일 전송의 경우 해당 작업 불필요)
+        contentType: false, // 13. 메모 기본 기능 구현: default 값으로 사용하지 않고, multipart/form-data (enctype) 처리 위해서 false 처리
+        // 13. 메모 기본 기능 구현: 모든 문자를 인코딩하지 않음을 명시 -> <form> 요소가 파일이나 이미지를 서버로 전송할 때 주로 사용
         success: (r) => {
-          // 성공적으로 값을 서버로 보낸 경우
-          let itemHtml = _makeMemoHtml(r); // 조회한 메모 데이터 동적으로 HTML 생성
-          $items = $(itemHtml); // prepend Method를 사용하기 위해서
-          $GRID.prepend($items).masonry("prepended", $items); // prepend Method -> 컨테이너에 추가
+          // 13. 메모 기본 기능 구현: 성공적으로 값을 서버로 보낸 경우
+          let itemHtml = _makeMemoHtml(r); // 13. 메모 기본 기능 구현: 메모 데이터를 기반으로 동적으로 HTML 생성
+          $items = $(itemHtml); // 13. 메모 기본 기능 구현: Masonry의 prepend Method를 사용하기 위해서 html을 jQuery로 감싸준다
+          $GRID.prepend($items).masonry("prepended", $items); // 13. 메모 기본 기능 구현: prepend Method -> 컨테이너에 추가
         },
         error: (e) => {
-          // 에러 발생 시
+          // 13. 메모 기본 기능 구현: 에러 발생 시
           alert(e.responseText);
         },
         complete: () => {
-          // request에 대한 success/error 발생 후(처리 완료 후)
-          resetModalFields(true); // Modal 초기화
+          // 13. 메모 기본 기능 구현: request에 대한 success/error 발생 후(처리 완료 후)
+          resetModalFields(true); // 13. 메모 기본 기능 구현: Modal 초기화
         },
       });
     }
@@ -285,34 +281,35 @@ const MEMO = (function () {
     if (el) $GRID.masonry("remove", $(el));
 
     if (STATUS) {
-      // STATUS가 true인 경우에 Ajax 호출
-      PAGE += 1; // Pagination
-      data = _getParams(); // 전역적으로 관리되고 있는 변수들을 dict 형태로 반환한 것을 get METHOD와 함께 보낸다
+      // 13. 메모 기본 기능 구현: STATUS가 true인 경우에 Ajax 호출
+      PAGE += 1; // 13. 메모 기본 기능 구현: Pagination
+      data = _getParams(); // 13. 메모 기본 기능 구현: 전역적으로 관리되고 있는 변수들을 dict 형태로 반환한 것을 GET Method와 함께 보낸다
       $.ajax({
-        url: "/api/memos",
-        type: "get",
+        url: "/api/memos", // 13. 메모 기본 기능 구현: 엔드포인트 -> api/memos
+        type: "get", // 13. 메모 기본 기능 구현: GET Method
         data: data,
         beforeSend: () => {
-          // Ajax가 서버로 요청하기 전에 실행되는 로직 실행
-          $customActions.addClass("inactive"); // 로딩 아이콘 활성화(토글링)
+          // 13. 메모 기본 기능 구현: Ajax가 서버로 요청하기 전에 실행되는 로직 실행
+          $customActions.addClass("inactive"); // 13. 메모 기본 기능 구현: 로딩 아이콘 활성화(토글링)
         },
         success: (r) => {
-          // 성공적으로 값을 서버로 보낸 경우
-          // 조회한 memo 데이터 동적으로 생성 // r: 메모 데이터 리스트
+          // 13. 메모 기본 기능 구현: 성공적으로 값을 서버로 보낸 경우
+          // 13. 메모 기본 기능 구현: 조회한 memo 데이터 동적으로 생성 // r: 메모 데이터 리스트
           let itemHtmls = "";
           $.each(r, (_, el) => {
-            itemHtmls += _makeMemoHtml(el); // el: 각각의 메모 데이터
+            // 13. 메모 기본 기능 구현: for문(el 순회)
+            itemHtmls += _makeMemoHtml(el); // 13. 메모 기본 기능 구현: el -> 각각의 메모 데이터
           });
-          itemHtmls += _makeMoreItemHtml(); // 추가 로드하기 버튼
-          const $items = $(itemHtmls); // masonry에 그려주기
-          $GRID.append($items).masonry("appended", $items); // append Method -> 컨테이너에 추가
+          itemHtmls += _makeMoreItemHtml(); // 13. 메모 기본 기능 구현: 추가 로드하기 버튼
+          const $items = $(itemHtmls); // 13. 메모 기본 기능 구현: masonry에 그려주기
+          $GRID.append($items).masonry("appended", $items); // 13. 메모 기본 기능 구현: append Method -> 컨테이너에 추가
         },
         error: (e) => {
-          // 에러 발생 시
-          STATUS = false; // Ajax가 호출되지 않도록 STATUS false 처리
+          // 13. 메모 기본 기능 구현: 에러 발생 시
+          STATUS = false; // 13. 메모 기본 기능 구현: Ajax가 호출되지 않도록 STATUS false 처리
           if (e.status == 404) {
-            // 불러올 데이터가 없는 경우(404 에러)
-            let html = _makeNoMoreItemHtml(); // 추가로 로드할 데이터 없음 알림
+            // 13. 메모 기본 기능 구현: 불러올 데이터가 없는 경우(404 에러)
+            let html = _makeNoMoreItemHtml(); // 13. 메모 기본 기능 구현: 추가로 로드할 데이터 없음 알림
             let $html = $(html);
             $GRID.append($html).masonry("appended", $html);
           } else {
@@ -320,11 +317,11 @@ const MEMO = (function () {
           }
         },
         complete: () => {
-          // request에 대한 success/error 발생 후(처리 완료 후)
-          _resetGridLayout(); // 그리드 리셋
+          // 13. 메모 기본 기능 구현: request에 대한 success/error 발생 후(처리 완료 후)
+          _resetGridLayout(); // 13. 메모 기본 기능 구현: 그리드 리셋
           setTimeout(() => {
-            // 일정 시간(1초) 후 실행
-            $customActions.removeClass("inactive"); // 로딩 아이콘 비활성화(토글링)
+            // 13. 메모 기본 기능 구현: 일정 시간(1초) 후 실행
+            $customActions.removeClass("inactive"); //13. 메모 기본 기능 구현: 로딩 아이콘 비활성화(토글링)
           }, 1000);
         },
       });
@@ -339,18 +336,18 @@ const MEMO = (function () {
       url: "/api/memos/" + id,
       type: "get",
       beforeSend: () => {
-        resetModalFields(); // Modal 필드 리셋
+        resetModalFields(); // 13. 메모 기본 기능 구현: Modal 필드 리셋
       },
       success: (r) => {
-        $modalTitle.val(r.title); // Modal의 Title 수정
-        $modalContent.val(r.content); // Modal의 Content 수정
-        $modalClose.attr("data-id", r.id); // index.js(27~39) -> Modal의 닫기 버튼에 있는 data-id값을 기준으로 updateMemo 함수 실행
+        $modalTitle.val(r.title); // 13. 메모 기본 기능 구현: Modal의 Title 수정
+        $modalContent.val(r.content); // 13. 메모 기본 기능 구현: Modal의 Content 수정
+        $modalClose.attr("data-id", r.id); // 13. 메모 기본 기능 구현: index.js(27~39) -> Modal의 닫기 버튼에 있는 data-id값을 기준으로 updateMemo 함수 실행
         if (r.linked_image) {
-          // 아이템 클릭 시, 이미지 동적 노출
+          // 13. 메모 기본 기능 구현: 아이템 클릭 시, 이미지 동적 노출
           const ihtml = '<img src="' + r.linked_image + '" />';
           $modalMedia.html(ihtml);
         }
-        $modalContent.trigger("keyup"); // index.js(63~67) -> textarea resizing(높이 값) 이벤트 실행을 위해 keyup triggering
+        $modalContent.trigger("keyup"); // 13. 메모 기본 기능 구현: index.js(63~67) -> textarea resizing(높이 값) 이벤트 실행을 위해 keyup triggering
       },
     });
   };
@@ -393,7 +390,7 @@ const MEMO = (function () {
     const data = new FormData(form);
 
     if ($modalModified.val() == 1) {
-      // Modal이 변경되었을때만 Ajax가 call 되도록 한다
+      // 13. 메모 기본 기능 구현: Modal이 변경되었을때만 Ajax가 call 되도록 한다
       $.ajax({
         url: "/api/memos/" + id,
         type: "put",
@@ -402,21 +399,21 @@ const MEMO = (function () {
         processData: false,
         contentType: false,
         success: (r) => {
-          // 업데이트 데이터 전송
+          // 13. 메모 기본 기능 구현: 업데이트 데이터 전송
           $title.html(r.title);
           $content.html(r.content);
           if (r.linked_image) {
-            // 아이템 업데이트 시 이미지 동적 변경
+            // 13. 메모 기본 기능 구현: 아이템 업데이트 시 이미지 동적 변경
             const ihtml = '<img src="' + r.linked_image + '" />';
-            $media.html(ihtml); // 업데이트 시 바로 반영
+            $media.html(ihtml); // 13. 메모 기본 기능 구현: 업데이트 시 바로 반영
           }
         },
         error: (e) => {
-          // 에러 발생 시
+          // 13. 메모 기본 기능 구현: 에러 발생 시
           alert(e.responseText);
         },
         conplete: () => {
-          resetModalFields(true); // 완료 시에 모달 리셋, masonry layout refresh
+          resetModalFields(true); // 13. 메모 기본 기능 구현: 완료 시에 모달 리셋, masonry layout refresh
         },
       });
     }
@@ -586,24 +583,6 @@ const MEMO = (function () {
     });
   };
 
-  const likes = (id) => {
-    const $item = $("#item" + id);
-
-    $.ajax({
-      url: "/api/memos/" + id + "/likes",
-      type: "post",
-      success: (r) => {
-        $item.find(".likes").html(r);
-      },
-      error: (e) => {
-        alert(e.responseText);
-      },
-      complete: () => {
-        _resetGridLayout;
-      },
-    });
-  };
-
   /* 메모 검색 조회 */
   const getMemosByNeedle = function (needle) {
     STATUS = true;
@@ -680,6 +659,5 @@ const MEMO = (function () {
     deleteLabel: deleteLabel,
     addLabel: addLabel,
     init: init,
-    likes: likes,
   };
 })();

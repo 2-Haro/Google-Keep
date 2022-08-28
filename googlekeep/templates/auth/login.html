@@ -1,19 +1,22 @@
-{% extends "/layout.html" %} {% block title -%} Login {%- endblock %} {% from
-"_mdlforms.html" import render_text_field %} {% block body -%}
+{% extends "/layout.html" %} {% block title -%} Login {%- endblock %}
+<!--7. 리팩토링: _mdlforms(macro) import-->
+{% from "_mdlforms.html" import render_text_field %} {% block body -%}
 <div class="mdl-grid">
-  {% include "_errors.html" %} {% filter indent(width=10) -%} {% include
-  "_errors.html" %} {%- endfilter %}
+  <!--4. 메시지 플래싱: include _errors.html template-->
+  {% filter indent(width=10) -%} {% include "_errors.html" %} {%- endfilter %}
   <div class="mdl-cell mdl-cell--4-col"></div>
   <div class="mdl-cell mdl-cell--4-col">
     <div class="mdl-card-wide mdl-card mdl-shadow--2dp">
+      <!--2. CSRF 방어: Method: POST, auth_route의 login 함수 실행(url_for에는 함수 명이 들어간다)-> Blueprint 사용 시 url_for에 Namespace(auth)가 들어가야 한다-->
       <form method="POST" action="{{ url_for('auth.login') }}">
+        <!--2. CSRF 방어: form을 작성할 때 항상 CSRF 토큰을 넣어서 submit 되도록 해준다-->
         {{ form.csrf_token }}
         <div class="mdl-card__title">
           <div id="logo">
-            <span class="material-icons"> hive </span>
+            <span class="material-icons"> article </span>
           </div>
           <span id="logoTitle" class="mdl-card__title-text">
-            <a href="/">Honey Tips</a>: Login
+            <a href="/">keep</a>: Login
           </span>
         </div>
         <div class="mdl-card__supporting-text">
@@ -34,10 +37,8 @@
 
           <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--12-col">
-              <a href="{{ url_for('auth.register') }}">Sign In</a>
-              <a href="{{ url_for('base.index') }}" style="float: right"
-                >Home</a
-              >
+              <a href="{{ url_for('auth.register') }}">회원가입</a>
+              <a href="{{ url_for('base.index') }}" style="float: right">홈</a>
             </div>
           </div>
         </div>

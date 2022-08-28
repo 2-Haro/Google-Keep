@@ -1,57 +1,40 @@
-version: "3.7"
-services:
+version: "3.7" # 18. Dockerizing: Docker Compose의 버전 -> 3.7
+services: # 18. Dockerizing: services 키 값
   gk-nginx:
-    container_name: gk-nginx
-    image: nginx # Docker hub에 있는 nginx Image
-    restart: always
-    volumes:
-      - ./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf # 해당 repository의 default.conf를 gk-nginx의 nginx Image의 default.conf로 업데이트
-      - gksocket:/tmp # gksocket volume을 만들고, tmp 경로와 연결 # gk-web의 tmp 경로와 gk-nginx의 tmp 경로는 gksocket에 mount
-    networks: # gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
+    container_name: gk-nginx # 18. Dockerizing: 컨테이너 이름
+    image: nginx # 18. Dockerizing: Docker hub에 있는 nginx Image
+    restart: always # 18. Dockerizing: 오류가 발생했을 때 항상 재시동
+    volumes: # 18. Dockerizing: 소켓 통신(request를 파일로 관리)을 하기 위한 파일을 gk-nginx와 gk-web이 공유하기 위한 볼륨 mount
+      - ./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf # 18. Dockerizing: repository의 default.conf(nginx 파일의 default 파일)를 gk-nginx의 nginx Image의 default.conf로 업데이트
+      - gksocket:/tmp # 18. Dockerizing: gksocket volume을 만들고, tmp 경로와 연결 # gk-web의 tmp 경로와 gk-nginx의 tmp 경로를 gksocket에 mount
+    networks: # 18. Dockerizing: gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
       - gknet
-    depends_on: # gk-web이 가동된 후 gk-web이 가동된다
+    depends_on: # 18. Dockerizing: gk-web이 기동된 후 gk-nginx가 가동된다
       - gk-web
-    ports: # 80포트로 접속하면 nginx로 라우팅
+    ports: # 18. Dockerizing: 80포트로 접속하면 nginx로 라우팅
       - 80:80
-  gk-web: # 서비스 이름
-    container_name: gk-web # 컨테이너 이름
-    image: gk-web
-    build: . # build할 docker 파일 위치
-    networks: # gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
+  gk-web: # 18. Dockerizing: 서비스 이름(python 어플리케이션 담당)
+    container_name: gk-web # 18. Dockerizing: 컨테이너 이름
+    image: gk-web # 18. Dockerizing: 이미지
+    build: . # 18. Dockerizing: build할 docker 파일 위치
+    networks: # 18. Dockerizing: gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
       - gknet
-    ports:
-      - 8080:8080
-    depends_on: # gk-db가 가동된 후 gk-web이 가동된다
-      - gk-db
+    # ports:
+    #   - 8080:8080 # 18. Dockerizing: 8080 포트 연결 # 19. 배포: Flask web과 nginx는 socket 통신을 하기 때문에 불필요
+    # depends_on: # 18. Dockerizing: gk-db가 기동된 후 gk-web이 기동된다(DB를 먼저 띄운 후 웹 기동) # 19. 배포: gk-db를 docker-compose.override.yml로 옮겼기 때문에 제거
+    #   - gk-db
     volumes:
-      - ./:/var/www/googlekeep # 프로젝트 소스 내 모든 것들을 Docker Image 내의 googlekeep 프로젝트에 mapping(mount)
-      - gksocket:/tmp # gk-web의 tmp 경로와 gk-nginx의 tmp 경로는 gksocket에 mount
-    restart: always # 오류가 발생했을 때 항상 재시동
-    environment:
+      - ./:/var/www/googlekeep # 18. Dockerizing: 프로젝트 소스 내 모든 것들을 Docker Image 내의 googlekeep 프로젝트에 mapping(mount)
+      - gksocket:/tmp # 18. Dockerizing: gksocket volume을 만들고, tmp 경로와 연결 # gk-web의 tmp 경로와 gk-nginx의 tmp 경로를 gksocket에 mount
+    restart: always # 18. Dockerizing: 오류가 발생했을 때 항상 재시동
+    environment: # 18. Dockerizing: 환경변수 정의(.env(환경변수 파일)로부터 Config 값 정의, .env 파일은 형상관리 하지 않고 따로 관리한다 -> docker-compose 파일이 실행될 때 자동 적용)
       - FLASK_APP=googlekeep
-      - FLASK_ENV=${FLASK_ENV:-development} # FLASK_ENV는 외부에서 컨트롤 할 수 있는 환경변수로 받아준다 # default: development
-      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI} # SQLALCHEMY_DATABASE_URI는 외부에서 컨트롤 할 수 있는 환경변수로 받아준다
-    command: ["sh", "./etc/docker-entrypoint.sh"] # 'sh': bin/bash 사용 # etc 폴더 내의 docker-entrypoint.sh 파일 사용
-  gk-db:
-    container_name: gk-db # 컨테이너 이름
-    image: mysql:5.7 # Docker hub에 있는 mysql 5.7
-    networks: # gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
-      - gknet
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: googlekeep
-    command:
-      - --character-set-server=utf8
-      - --collation-server=utf8_general_ci
-    ports:
-      - 3306:3306
-    volumes: # 기존에는 DB가 영구적으로 보존되지 않았지만, 영구보존을 시키기 위해서 볼륨 제작
-      - gkvolume:/var/lib/mysql # MySQL의 Image에 있는 /var/lib/mysql 디렉토리에 mount -> Docker Image/Docker Container에 적재되는 데이터들은 gkvolume에 정의 # gkvolume을 삭제하기 전까지 영구적으로 보존
-    restart: always
+      - FLASK_ENV=${FLASK_ENV:-development} # 18. Dockerizing: FLASK_ENV는 외부에서 컨트롤 할 수 있는 환경변수로 받아준다 # default: development
+      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI} # 18. Dockerizing: SQLALCHEMY_DATABASE_URI는 외부에서 컨트롤 할 수 있는 환경변수로 받아준다
+    command: ["sh", "./etc/docker-entrypoint.sh"] # 18. Dockerizing: 'sh': bin/bash 사용 # etc 폴더 내의 docker-entrypoint.sh 파일 실행
 
-networks:
-  gknet:
+networks: # 18. Dockerizing: Docker Container를 기동하면서 python 어플리케이션을 담당하는 gk-web과 MySQL을 담당하는 gk-db를 연결하기 위한 네트워크(같은 네트워크)
+  gknet: # 18. Dockerizing: gknet 정의
 
-volumes: # volume 자원 공유
-  gkvolume:
-  gksocket:
+volumes: # 18. Dockerizing: volume 자원 공유
+  gksocket: # 18. Dockerizing: gksocket 정의

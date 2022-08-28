@@ -1,0 +1,21 @@
+version: "3.7" # 18. Dockerizing: Docker Compose의 버전 -> 3.7
+services: # 18. Dockerizing: services 키 값
+  gk-db: # 18. Dockerizing: 서비스 이름(MySQL 담당)
+    container_name: gk-db # 컨테이너 이름
+    image: mysql:5.7 # Docker hub에 있는 mysql 5.7 이미지 이용
+    networks: # gk-nginx, gk-web, gk-db가 같은 네트워크(gk-net)에 속한다
+      - gknet
+    environment: # 18. Dockerizing: MySQL DB 생성 커맨드
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: googlekeep
+    command: # 18. Dockerizing: MySQL DB 생성 커맨드
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
+    # ports: # 18. Dockerizing: MySQL DB 생성 커맨드
+    #   - 3306:3306 # 18. Dockerizing: 3306 포트 연결 # 19. 배포: 네트워크 내에서 기동되기 때문에 불필요
+    volumes: # 18. Dockerizing: 기존에는 DB가 영구적으로 보존되지 않았지만, 영구보존을 시키기 위해서 볼륨 제작
+      - gkvolume:/var/lib/mysql # MySQL의 Image에 있는 /var/lib/mysql 디렉토리에 mount -> Docker Image/Docker Container에 적재되는 데이터들은 gkvolume에 정의 # gkvolume을 삭제하기 전까지 영구적으로 보존
+    restart: always # 18. Dockerizing: 오류가 발생했을 때 항상 재시동
+
+volumes: # 18. Dockerizing: volume 자원 공유
+  gkvolume: # 18. Dockerizing: gkvolume 정의

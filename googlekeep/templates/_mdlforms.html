@@ -1,9 +1,13 @@
 {% macro render_text_field(field) %}
+<!--7. 리팩토링: 매크로에 함수명 지정-->
 <div
   width="100%;"
   class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"
 >
-  {{ field(class="mdl-textfield__input", **kwargs) }} {{
-  field.label(class="mdl-textfield__label") }}
+  {{ field(class="mdl-textfield__input", **kwargs) }}
+  <!--7. 리팩토링: input 태그-->
+  <!--**kwargs: minlength=4, maxlength=20, autocomplete='off'-->
+  {{ field.label(class="mdl-textfield__label") }}
+  <!--7. 리팩토링: label 태그-->
 </div>
 {% endmacro %}

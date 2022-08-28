@@ -2,6 +2,7 @@
 <div id="errors" class="mdl-cell mdl-cell--4-col">
   <ul class="mdl-list">
     {%- for message in get_flashed_messages() -%}
+    <!--4. 메시지 플래싱: get_flashed_message 사용해서 프론트에 에러 메시지 노출-->
     <li class="mdl-list__item">
       <span class="mdl-list__item-primary-content">
         <i class="material-icons mdl-list__item-icon">info</i>
